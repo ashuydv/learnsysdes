@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: learnsysdes
+      POSTGRES_PASSWORD: learnsysdes
+      POSTGRES_DB: learnsysdes
+    ports:
+      - "5433:5432"
+    volumes:
+      - learnsysdes-postgres:/var/lib/postgresql/data
+
+volumes:
+  learnsysdes-postgres:
