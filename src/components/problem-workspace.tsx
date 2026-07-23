@@ -1,8 +1,8 @@
 "use client";
 
 import { useRef, useState, useTransition } from "react";
-import type { Editor } from "tldraw";
-import { TldrawCanvas } from "@/components/tldraw-canvas";
+import type { ExcalidrawImperativeAPI } from "@excalidraw/excalidraw/types";
+import { ExcalidrawCanvas } from "@/components/excalidraw-canvas";
 import { StarterPalette } from "@/components/starter-palette";
 import {
   EstimationPanel,
@@ -20,7 +20,7 @@ export function ProblemWorkspace({
   initialDiagram: unknown;
   initialEstimation: EstimationInputs | null;
 }) {
-  const editorRef = useRef<Editor | null>(null);
+  const apiRef = useRef<ExcalidrawImperativeAPI | null>(null);
   const [estimation, setEstimation] = useState<EstimationInputs>(
     initialEstimation ?? defaultEstimationInputs
   );
@@ -28,9 +28,9 @@ export function ProblemWorkspace({
   const [savedAt, setSavedAt] = useState<Date | null>(null);
 
   function handleSave() {
-    const editor = editorRef.current;
-    if (!editor) return;
-    const snapshot = editor.getSnapshot();
+    const api = apiRef.current;
+    if (!api) return;
+    const snapshot = { elements: api.getSceneElements() };
     startTransition(async () => {
       await saveSubmission(problemId, snapshot, estimation);
       setSavedAt(new Date());
@@ -62,13 +62,13 @@ export function ProblemWorkspace({
         </div>
 
         <div className="mb-3">
-          <StarterPalette getEditor={() => editorRef.current} />
+          <StarterPalette getApi={() => apiRef.current} />
         </div>
 
-        <TldrawCanvas
+        <ExcalidrawCanvas
           initialSnapshot={initialDiagram}
-          onMount={(editor) => {
-            editorRef.current = editor;
+          onMount={(api) => {
+            apiRef.current = api;
           }}
         />
       </div>

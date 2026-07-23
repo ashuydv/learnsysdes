@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { TldrawCanvas } from "@/components/tldraw-canvas";
+import { ExcalidrawCanvas } from "@/components/excalidraw-canvas";
 import { MarkdownLite } from "@/components/markdown-lite";
 import { buildExportMarkdown } from "@/lib/export-markdown";
 
@@ -75,7 +75,7 @@ export function ReferenceSolution({
               <p className="mb-2 text-sm font-medium text-black/60 dark:text-white/60">
                 Reference diagram — view only, not saved to your submission
               </p>
-              <TldrawCanvas
+              <ExcalidrawCanvas
                 key="reference"
                 initialSnapshot={diagramSnapshot}
                 onMount={() => {}}
