@@ -779,11 +779,31 @@ const problems: ProblemSeed[] = [
         "High availability for the redirect path",
       ],
     },
-    referenceSolution: `## Approach
-Store a mapping from a short code to the long URL in a key-value-friendly database. On creation, generate a short code (e.g. base62-encode an auto-incrementing ID, or hash the URL and take the first 7 characters, checking for collisions) and write it once. On redirect, look up the code and return an HTTP 301/302 to the long URL.
+    referenceSolution: `## Summary
+A cache-backed key-value store in front of a durable database handles this well: redirects are pure point lookups by short_code, and a base62-encoded sequential ID sidesteps collision-checking on writes entirely. The result comfortably meets a low-latency redirect requirement at a 100:1 read:write ratio.
+
+## Key strengths
+- **Fast redirects** — a cache keyed by short_code serves the overwhelming majority of reads, so the database only sees cache misses and writes.
+- **Collision-free code generation** — base62-encoding a monotonically increasing ID guarantees unique short codes without a collision-detection step.
+- **Simple, well-understood access pattern** — every operation is a point lookup or point write by short_code, which both key-value stores and indexed SQL tables handle efficiently.
+
+## Approach
+Store a mapping from a short code to the long URL in a key-value-friendly database. On creation, generate a short code (base62-encode an auto-incrementing ID, or hash the URL and take the first 7 characters, checking for collisions) and write it once. On redirect, look up the code and return an HTTP 301/302 to the long URL.
+
+## API endpoints
+| Method | Path | Description |
+| --- | --- | --- |
+| POST | /api/v1/shorten | Create a short URL for a given long URL |
+| GET | /:shortCode | Redirect to the original long URL and record a click |
 
 ## Data model
-A single table/collection: short_code (PK), long_url, created_at, expires_at, owner_id. The access pattern is a point lookup by short_code, which is exactly what key-value stores and indexed SQL tables both do well.
+| Field | Type | Description |
+| --- | --- | --- |
+| short_code | VARCHAR(8), PK | Unique short code, used for direct lookups |
+| long_url | VARCHAR(2048) | The original URL to redirect to |
+| created_at | TIMESTAMP | When the short URL was created |
+| expires_at | TIMESTAMP, nullable | Optional expiration for the link |
+| owner_id | TEXT, nullable | User who created the link, if authenticated |
 
 ## Scaling reads
 Redirects vastly outnumber creations, so put a cache (e.g. Redis) in front of the database keyed by short_code — most popular links get served from cache, and the database only sees cache misses and writes.
@@ -791,21 +811,31 @@ Redirects vastly outnumber creations, so put a cache (e.g. Redis) in front of th
 ## Scaling writes and avoiding collisions
 Base62-encoding a globally unique, monotonically increasing ID (e.g. from a dedicated ID-generation service or database sequence) sidesteps collision-checking entirely, at the cost of needing a scalable ID generator once you shard the database.
 
-## Back-of-envelope
-At 100M new URLs/month (~40 writes/sec average) and a 100:1 read:write ratio, redirects run at roughly 4,000 reads/sec average — comfortably handled by a cache-backed key-value store with database sharding for durability.`,
+## Estimates
+- **Write volume**: 100M new URLs/month (~40 writes/sec average)
+- **Read:write ratio**: 100:1
+- **Peak redirect QPS**: ~4,000 reads/sec average — comfortably handled by a cache-backed key-value store with database sharding for durability
+
+## Future improvements
+- Multi-region deployment with geo-distributed caching to cut redirect latency for global users
+- Analytics pipeline (async) for click trends beyond a simple counter`,
     diagram: {
       nodes: [
-        { id: "client", label: "Client", x: 20, y: 160, kind: "client" },
-        { id: "lb", label: "Load Balancer", x: 260, y: 160, kind: "lb" },
-        { id: "service", label: "URL Service", x: 500, y: 160, kind: "service" },
-        { id: "cache", label: "Cache", x: 760, y: 60, kind: "cache" },
-        { id: "db", label: "Database", x: 760, y: 260, kind: "db" },
+        { id: "client", label: "Client", x: 20, y: 210, kind: "client" },
+        { id: "gateway", label: "API Gateway", x: 260, y: 90, kind: "lb", w: 140, h: 260 },
+        { id: "shorten", label: "URL Shortening Service", x: 500, y: 60, kind: "service", w: 220 },
+        { id: "redirect", label: "URL Redirection Request Handler", x: 500, y: 280, kind: "service", w: 220 },
+        { id: "db", label: "NoSQL DB", x: 820, y: 60, kind: "db" },
+        { id: "cache", label: "Cache", x: 820, y: 280, kind: "cache" },
       ],
       edges: [
-        { from: "client", to: "lb" },
-        { from: "lb", to: "service" },
-        { from: "service", to: "cache" },
-        { from: "service", to: "db" },
+        { from: "client", to: "gateway" },
+        { from: "gateway", to: "shorten", label: "POST /api/v1/shorten" },
+        { from: "gateway", to: "redirect", label: "GET /:shortCode" },
+        { from: "redirect", to: "gateway", label: "302 redirect" },
+        { from: "shorten", to: "db", label: "write shortCode:longURL" },
+        { from: "redirect", to: "cache", label: "read (cache hit)" },
+        { from: "cache", to: "db", label: "cache miss / populate" },
       ],
     },
   },
@@ -827,8 +857,31 @@ At 100M new URLs/month (~40 writes/sec average) and a 100:1 read:write ratio, re
         "The limiter itself must not become a single point of failure",
       ],
     },
-    referenceSolution: `## Approach
+    referenceSolution: `## Summary
+A token bucket per client, backed by a shared Redis store and enforced atomically at the API gateway, allows short bursts while capping the steady-state rate — all with only 1-2ms of added latency per request.
+
+## Key strengths
+- **Shared, consistent state** — bucket state lives in Redis rather than per-server memory, so the limit is enforced correctly no matter which server handles a given request.
+- **Atomic enforcement** — the check-and-decrement is a single Lua script/atomic command, eliminating race conditions under concurrent requests.
+- **Cheap, centralized enforcement** — a lightweight check at the API gateway protects every downstream service without each one implementing its own limiting logic.
+
+## Approach
 Use the token bucket algorithm: each client has a bucket with a maximum capacity and a refill rate. Each request consumes one token; if the bucket is empty, the request is rejected with 429. This allows short bursts while enforcing a steady average rate.
+
+## API endpoints
+| Method | Path | Description |
+| --- | --- | --- |
+| ANY | /* (via gateway middleware) | Checked before every request; returns 429 with Retry-After when the limit is exceeded |
+| GET | /admin/limits/:clientId | Inspect or configure a client's rate limit tier |
+
+## Data model
+| Field | Type | Description |
+| --- | --- | --- |
+| client_id | TEXT, PK | API key or user ID the bucket belongs to |
+| tokens_remaining | INT | Current tokens available in the bucket |
+| last_refill_at | TIMESTAMP | Last time the bucket was refilled, used to compute elapsed refills |
+| capacity | INT | Maximum burst size for this client's tier |
+| refill_rate | FLOAT | Tokens added per second for this client's tier |
 
 ## Where state lives
 Bucket state (tokens remaining, last refill time) must be shared across all servers handling requests, so it lives in a fast, shared store like Redis rather than in-process memory — otherwise each server would enforce its own independent limit.
@@ -839,8 +892,13 @@ A lightweight check at the API gateway/edge protects all downstream services che
 ## Making it fast and correct
 The check-and-decrement operation on the bucket must be atomic to avoid race conditions under concurrent requests — implemented as a single Lua script or atomic command in Redis rather than a separate read-then-write.
 
-## Back-of-envelope
-A Redis-backed check adds roughly 1-2ms of latency per request, which is negligible compared to typical service response times, even at tens of thousands of requests per second.`,
+## Estimates
+- **Added latency**: ~1-2ms per request for the Redis-backed check
+- **Throughput**: negligible overhead even at tens of thousands of requests/sec, since the check is a single round trip to Redis
+
+## Future improvements
+- Sliding-window or leaky-bucket variants for smoother rate enforcement at tier boundaries
+- Per-endpoint (not just per-client) limits for finer-grained protection of expensive routes`,
     diagram: {
       nodes: [
         { id: "client", label: "Client", x: 20, y: 160, kind: "client" },
@@ -875,20 +933,47 @@ A Redis-backed check adds roughly 1-2ms of latency per request, which is negligi
         "System should scale to millions of concurrent connections",
       ],
     },
-    referenceSolution: `## Approach
+    referenceSolution: `## Summary
+Persistent WebSocket connections, a Redis-backed connection-routing layer, and an append-mostly message store together deliver near-real-time messages while keeping history durable — the main scaling challenge is connection state, not message throughput.
+
+## Key strengths
+- **Real-time delivery with offline fallback** — messages push immediately to an online recipient's connection, or wait for next connect (plus an optional push notification) when offline.
+- **Stateless routing across chat servers** — a Redis lookup of "which server is user X on" lets any server locate where to deliver a message, so the fleet can scale horizontally.
+- **Ordered, durable history** — messages keyed by conversation_id with a sequence number support efficient, in-order retrieval of a conversation.
+
+## Approach
 Clients hold a persistent connection (WebSocket) to a chat server. When a message is sent, the server persists it to a database and pushes it to the recipient's active connection if they're online; if offline, it's delivered on next connect (and optionally triggers a push notification).
+
+## API endpoints
+| Method | Path | Description |
+| --- | --- | --- |
+| WS | /ws/connect | Establish the persistent connection for sending/receiving messages |
+| GET | /api/v1/conversations/:id/messages | Fetch message history for a conversation |
+| GET | /api/v1/presence/:userId | Check whether a user is currently online |
+
+## Data model
+| Field | Type | Description |
+| --- | --- | --- |
+| message_id | TEXT, PK | Unique message identifier |
+| conversation_id | TEXT | Conversation (1:1 or group) this message belongs to |
+| sender_id | TEXT | User who sent the message |
+| body | TEXT | Message content |
+| sent_at | TIMESTAMP / sequence | Ordering key for retrieving history in order |
 
 ## Connection management
 Because WebSocket connections are stateful and long-lived, a connection-routing layer (e.g. a lookup in Redis of "which chat server is user X connected to") is needed so any server can find where to deliver a message meant for a specific user.
 
-## Data model
-Messages are stored keyed by conversation_id with a timestamp/sequence number, which supports efficient retrieval of a conversation's history in order, typically via a wide-column or document store for write-heavy, append-mostly access patterns.
-
 ## Fan-out for groups
 For group chats, a new message fans out to every member's active connection; for very large groups this fan-out is done asynchronously via a queue rather than synchronously in the request path.
 
-## Back-of-envelope
-At 10M daily active users sending 20 messages/day each, that's roughly 2,300 messages/sec average, with connection state (millions of concurrent WebSockets) as the main scaling challenge rather than message throughput itself.`,
+## Estimates
+- **Daily active users**: 10M, sending ~20 messages/day each
+- **Average message throughput**: ~2,300 messages/sec
+- **Main scaling constraint**: concurrent WebSocket connections (millions), not message throughput
+
+## Future improvements
+- Read receipts and typing indicators as additional low-latency presence signals
+- Message search via a secondary index or search service for large conversation histories`,
     diagram: {
       nodes: [
         { id: "client", label: "Client", x: 20, y: 160, kind: "client" },
@@ -926,8 +1011,31 @@ At 10M daily active users sending 20 messages/day each, that's roughly 2,300 mes
         "Scale to sending millions of notifications per day across providers",
       ],
     },
-    referenceSolution: `## Approach
+    referenceSolution: `## Summary
+Triggering services publish events to a queue instead of calling the notification system directly, so a pool of idempotent workers can render, retry, and deliver across push/email/SMS without ever slowing down the services that generate the events.
+
+## Key strengths
+- **Fully decoupled from triggering services** — an event queue means checkout, posting, or any other service is never blocked by a slow or down notification system.
+- **At-least-once delivery without duplicates** — idempotent workers (deduped by notification_id) make retries and re-processing safe.
+- **Horizontally scalable throughput** — adding more queue consumers scales delivery independent of how fast triggering services produce events.
+
+## Approach
 Other services publish notification events to a message queue rather than calling the notification system synchronously — this decouples the two, so a slow or down notification system never blocks e.g. checkout or posting a comment.
+
+## API endpoints
+| Method | Path | Description |
+| --- | --- | --- |
+| POST | /api/v1/notifications | Internal endpoint for services to enqueue a notification event |
+| GET/PUT | /api/v1/users/:id/preferences | Read or update a user's channel and quiet-hours preferences |
+
+## Data model
+| Field | Type | Description |
+| --- | --- | --- |
+| notification_id | TEXT, PK | Unique ID, used to dedupe retries |
+| user_id | TEXT | Recipient of the notification |
+| channel | ENUM(push, email, sms) | Delivery channel |
+| status | ENUM(pending, sent, failed) | Current delivery status |
+| created_at | TIMESTAMP | When the event was enqueued |
 
 ## Processing pipeline
 Workers consume events from the queue, look up the target user's channel preferences, render the appropriate template per channel, and hand off delivery to channel-specific services (push provider, email provider, SMS provider).
@@ -938,8 +1046,14 @@ Each channel delivery is retried with exponential backoff on failure, and the qu
 ## Respecting preferences
 A user-preferences store (simple key-value: user_id, channel, enabled) is checked before sending anything, and can also encode quiet hours to defer non-urgent notifications.
 
-## Back-of-envelope
-At 50M notifications/day (~580/sec average, several times that at peak), a queue-backed worker pool scales horizontally by adding more consumers, independent of how fast the triggering services run.`,
+## Estimates
+- **Daily volume**: 50M notifications/day
+- **Average throughput**: ~580/sec, several times that at peak
+- **Scaling lever**: horizontal worker pool size, independent of triggering-service load
+
+## Future improvements
+- Per-channel rate limiting to stay within third-party provider quotas
+- A digest mode that batches low-priority notifications instead of sending each individually`,
     diagram: {
       nodes: [
         { id: "trigger", label: "Triggering Service", x: 20, y: 160, kind: "service" },
@@ -975,8 +1089,31 @@ At 50M notifications/day (~580/sec average, several times that at peak), a queue
         "Reasonable latency for the user-facing checkout request (a few seconds)",
       ],
     },
-    referenceSolution: `## Approach
+    referenceSolution: `## Summary
+Checkout is modeled as a saga — reserve inventory, charge payment, create the order — with atomic inventory decrements, compensating actions on failure, and an idempotency key on the request, so the system stays correct under concurrency and partial failures rather than relying on raw throughput.
+
+## Key strengths
+- **No overselling under concurrency** — an atomic conditional decrement on inventory means two concurrent checkouts for the last unit can't both succeed.
+- **Resilient to partial failures** — a saga pattern with compensating actions (release reservation, refund) keeps payment, inventory, and order state consistent across independent systems.
+- **Safe against retries and double-clicks** — an idempotency key on the checkout request guarantees a retried or double-submitted request never creates two orders or charges twice.
+
+## Approach
 Checkout is a multi-step process that must stay consistent even if a step fails partway through: reserve inventory, charge payment, create the order record, and release the reservation if any step fails.
+
+## API endpoints
+| Method | Path | Description |
+| --- | --- | --- |
+| POST | /api/v1/checkout | Submit a cart + payment method; carries an idempotency key |
+| GET | /api/v1/orders/:id | Retrieve order status and confirmation details |
+
+## Data model
+| Field | Type | Description |
+| --- | --- | --- |
+| order_id | TEXT, PK | Unique order identifier |
+| user_id | TEXT | Customer placing the order |
+| idempotency_key | TEXT, unique | Dedupes retried/duplicate checkout requests |
+| status | ENUM(pending, paid, failed, fulfilled) | Current state of the order |
+| inventory_reservation_id | TEXT | Links to the atomic inventory reservation for this order |
 
 ## Avoiding overselling
 Inventory reservation uses an atomic conditional decrement (e.g. UPDATE inventory SET qty = qty - 1 WHERE product_id = ? AND qty > 0) so concurrent checkouts for the last unit can't both succeed — the database's row-level locking or a compare-and-swap enforces this.
@@ -990,8 +1127,13 @@ The checkout request itself should carry an idempotency key so a user's accident
 ## Asynchronous follow-up
 Once the order is confirmed, non-critical follow-up work — sending a confirmation email, notifying the warehouse — is pushed to a queue rather than done synchronously, keeping the user-facing checkout fast.
 
-## Back-of-envelope
-At 500,000 orders/day (~6 orders/sec average, higher at peak sale events), the main scaling concern isn't raw throughput but correctness under concurrency — the inventory decrement must remain atomic even as write volume grows.`,
+## Estimates
+- **Daily volume**: 500,000 orders/day (~6 orders/sec average, higher at peak sale events)
+- **Primary scaling concern**: correctness under concurrency, not raw throughput — the inventory decrement must remain atomic as write volume grows
+
+## Future improvements
+- Pre-warm inventory caches ahead of known flash-sale events to reduce database contention at peak
+- A dedicated saga orchestrator/state machine if the checkout flow grows beyond 3-4 steps`,
     diagram: {
       nodes: [
         { id: "client", label: "Client", x: 20, y: 160, kind: "client" },

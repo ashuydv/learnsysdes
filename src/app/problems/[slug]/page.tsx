@@ -48,6 +48,8 @@ export default async function ProblemPage({
         />
 
         <ReferenceSolution
+          title={problem.title}
+          description={problem.description}
           solutionText={problem.referenceSolution}
           diagramSnapshot={problem.referenceDiagramJson}
         />
