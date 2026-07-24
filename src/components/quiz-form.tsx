@@ -66,15 +66,16 @@ export function QuizForm({
                     key={oi}
                     className={`flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-sm ${
                       showCorrectness && isCorrectOption
-                        ? "bg-green-500/10"
+                        ? "bg-emerald-500/10"
                         : showCorrectness && isSelected
                           ? "bg-red-500/10"
-                          : "hover:bg-black/5 dark:hover:bg-white/5"
+                          : "hover:bg-brand-via/5"
                     }`}
                   >
                     <input
                       type="radio"
                       name={`question-${qi}`}
+                      className="accent-brand-via"
                       checked={isSelected}
                       onChange={() =>
                         setAnswers((prev) => prev.map((v, i) => (i === qi ? oi : v)))
@@ -82,7 +83,7 @@ export function QuizForm({
                     />
                     <span>{option}</span>
                     {showCorrectness && isCorrectOption && (
-                      <span className="text-green-600 dark:text-green-400">✓</span>
+                      <span className="text-emerald-600 dark:text-emerald-400">✓</span>
                     )}
                     {showCorrectness && isSelected && !isCorrectOption && (
                       <span className="text-red-600 dark:text-red-400">✗</span>
@@ -105,7 +106,7 @@ export function QuizForm({
           </p>
           <button
             onClick={handleRetake}
-            className="rounded-md border border-black/10 px-3 py-1.5 text-sm hover:bg-black/5 dark:border-white/15 dark:hover:bg-white/10"
+            className="rounded-md border border-black/10 px-3 py-1.5 text-sm transition-colors hover:border-brand-via/40 hover:bg-brand-via/5 dark:border-white/15"
           >
             Retake quiz
           </button>
@@ -114,7 +115,7 @@ export function QuizForm({
         <button
           onClick={handleSubmit}
           disabled={pending}
-          className="mt-5 rounded-md bg-black px-4 py-2 text-sm text-white hover:bg-black/80 disabled:opacity-50 dark:bg-white dark:text-black dark:hover:bg-white/80"
+          className="btn-gradient mt-5 rounded-md px-4 py-2 text-sm font-medium disabled:opacity-50"
         >
           {pending ? "Submitting…" : "Submit quiz"}
         </button>

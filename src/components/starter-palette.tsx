@@ -48,7 +48,7 @@ export function StarterPalette({
           key={item.kind}
           type="button"
           onClick={() => addShape(item.label, item.strokeColor, item.backgroundColor)}
-          className="rounded-md border border-black/10 px-3 py-1.5 text-sm hover:bg-black/5 dark:border-white/15 dark:hover:bg-white/10"
+          className="rounded-md border border-black/10 px-3 py-1.5 text-sm transition-colors hover:border-brand-via/40 hover:bg-brand-via/5 dark:border-white/15"
         >
           + {item.label}
         </button>

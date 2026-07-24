@@ -15,7 +15,7 @@ export default async function ModulesPage() {
 
   return (
     <div className="mx-auto max-w-3xl px-6 py-12">
-      <h1 className="text-2xl font-semibold tracking-tight">Learning modules</h1>
+      <h1 className="text-gradient-brand text-2xl font-bold tracking-tight">Learning modules</h1>
       <p className="mt-1 text-sm text-black/60 dark:text-white/60">
         Work through these in order, or jump to whatever you need to brush up on.
       </p>
@@ -26,11 +26,12 @@ export default async function ModulesPage() {
             <li key={module.id}>
               <Link
                 href={`/modules/${module.slug}`}
-                className="flex items-center justify-between rounded-lg border border-black/10 px-5 py-4 hover:bg-black/5 dark:border-white/10 dark:hover:bg-white/5"
+                className="group flex items-center justify-between rounded-lg border border-black/10 px-5 py-4 transition-colors hover:border-brand-via/40 hover:bg-brand-via/5 dark:border-white/10"
               >
                 <div>
-                  <p className="font-medium">
-                    {module.order}. {module.title}
+                  <p className="font-medium group-hover:text-brand-via">
+                    <span className="text-gradient-brand font-semibold">{module.order}.</span>{" "}
+                    {module.title}
                   </p>
                   <p className="mt-0.5 text-sm text-black/60 dark:text-white/60">
                     {module.summary}

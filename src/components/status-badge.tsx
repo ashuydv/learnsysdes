@@ -6,8 +6,8 @@ const labels: Record<string, string> = {
 
 const styles: Record<string, string> = {
   NOT_STARTED: "bg-black/5 text-black/50 dark:bg-white/10 dark:text-white/50",
-  IN_PROGRESS: "bg-amber-500/10 text-amber-700 dark:text-amber-400",
-  COMPLETE: "bg-green-500/10 text-green-700 dark:text-green-400",
+  IN_PROGRESS: "bg-amber-500/15 text-amber-700 dark:text-amber-400",
+  COMPLETE: "bg-emerald-500/15 text-emerald-700 dark:text-emerald-400",
 };
 
 export function StatusBadge({ status }: { status: string }) {

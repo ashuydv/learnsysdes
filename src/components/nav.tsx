@@ -12,19 +12,19 @@ export async function Nav() {
   return (
     <header className="border-b border-black/10 dark:border-white/10">
       <nav className="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
-        <Link href="/" className="text-lg font-semibold tracking-tight">
+        <Link href="/" className="text-gradient-brand text-lg font-bold tracking-tight">
           LearnSysDes
         </Link>
         <div className="flex items-center gap-6 text-sm">
           {session?.user ? (
             <>
-              <Link href="/dashboard" className="hover:underline">
+              <Link href="/dashboard" className="hover:text-brand-via">
                 Dashboard
               </Link>
-              <Link href="/modules" className="hover:underline">
+              <Link href="/modules" className="hover:text-brand-via">
                 Modules
               </Link>
-              <Link href="/problems" className="hover:underline">
+              <Link href="/problems" className="hover:text-brand-via">
                 Problems
               </Link>
               <span className="text-black/50 dark:text-white/50">
@@ -41,12 +41,12 @@ export async function Nav() {
             </>
           ) : (
             <>
-              <Link href="/sign-in" className="hover:underline">
+              <Link href="/sign-in" className="hover:text-brand-via">
                 Sign in
               </Link>
               <Link
                 href="/sign-up"
-                className="rounded-md bg-black px-3 py-1.5 text-white hover:bg-black/80 dark:bg-white dark:text-black dark:hover:bg-white/80"
+                className="btn-gradient rounded-md px-3 py-1.5 font-medium shadow-sm shadow-brand-via/20"
               >
                 Sign up
               </Link>

@@ -42,10 +42,10 @@ export default async function ModulePage({
   return (
     <div className="mx-auto max-w-3xl px-6 py-12">
       <ModuleProgressTracker moduleId={module.id} status={progress?.status ?? "NOT_STARTED"} />
-      <Link href="/modules" className="text-sm text-black/50 hover:underline dark:text-white/50">
+      <Link href="/modules" className="text-sm text-black/50 hover:text-brand-via dark:text-white/50">
         ← All modules
       </Link>
-      <h1 className="mt-2 text-3xl font-bold tracking-tight">{module.title}</h1>
+      <h1 className="text-gradient-brand mt-2 text-3xl font-bold tracking-tight">{module.title}</h1>
       <p className="mt-1 text-black/60 dark:text-white/60">{module.summary}</p>
 
       {diagram && (
@@ -66,14 +66,14 @@ export default async function ModulePage({
 
       <div className="mt-10 flex items-center justify-between border-t border-black/10 pt-6 text-sm dark:border-white/10">
         {prevModule ? (
-          <Link href={`/modules/${prevModule.slug}`} className="hover:underline">
+          <Link href={`/modules/${prevModule.slug}`} className="hover:text-brand-via">
             ← {prevModule.title}
           </Link>
         ) : (
           <span />
         )}
         {nextModule ? (
-          <Link href={`/modules/${nextModule.slug}`} className="hover:underline">
+          <Link href={`/modules/${nextModule.slug}`} className="hover:text-brand-via">
             {nextModule.title} →
           </Link>
         ) : (

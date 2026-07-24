@@ -60,7 +60,7 @@ export function SignUpForm({ callbackUrl }: { callbackUrl: string }) {
           required
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className="w-full rounded-md border border-black/15 px-3 py-2 text-sm dark:border-white/20 dark:bg-transparent"
+          className="w-full rounded-md border border-black/15 px-3 py-2 text-sm outline-none focus:border-brand-via focus:ring-2 focus:ring-brand-via/20 dark:border-white/20 dark:bg-transparent"
         />
       </div>
       <div>
@@ -73,7 +73,7 @@ export function SignUpForm({ callbackUrl }: { callbackUrl: string }) {
           required
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="w-full rounded-md border border-black/15 px-3 py-2 text-sm dark:border-white/20 dark:bg-transparent"
+          className="w-full rounded-md border border-black/15 px-3 py-2 text-sm outline-none focus:border-brand-via focus:ring-2 focus:ring-brand-via/20 dark:border-white/20 dark:bg-transparent"
         />
       </div>
       <div>
@@ -87,7 +87,7 @@ export function SignUpForm({ callbackUrl }: { callbackUrl: string }) {
           minLength={8}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="w-full rounded-md border border-black/15 px-3 py-2 text-sm dark:border-white/20 dark:bg-transparent"
+          className="w-full rounded-md border border-black/15 px-3 py-2 text-sm outline-none focus:border-brand-via focus:ring-2 focus:ring-brand-via/20 dark:border-white/20 dark:bg-transparent"
         />
         <p className="mt-1 text-xs text-black/40 dark:text-white/40">
           At least 8 characters.
@@ -97,7 +97,7 @@ export function SignUpForm({ callbackUrl }: { callbackUrl: string }) {
       <button
         type="submit"
         disabled={pending}
-        className="rounded-md bg-black px-4 py-2 text-sm text-white hover:bg-black/80 disabled:opacity-50 dark:bg-white dark:text-black dark:hover:bg-white/80"
+        className="btn-gradient rounded-md px-4 py-2 text-sm font-medium disabled:opacity-50"
       >
         {pending ? "Creating account…" : "Create account"}
       </button>
