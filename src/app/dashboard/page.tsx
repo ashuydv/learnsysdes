@@ -80,7 +80,7 @@ export default async function DashboardPage() {
             <span className="text-brand-via">→</span>
           </Link>
         ) : (
-          <div className="mt-3 flex items-center justify-between rounded-md bg-black/5 px-4 py-3 text-sm dark:bg-white/10">
+          <div className="mt-3 flex flex-col gap-2 rounded-md bg-black/5 px-4 py-3 text-sm sm:flex-row sm:items-center sm:justify-between dark:bg-white/10">
             <span>You haven&apos;t started anything yet — jump into the first module.</span>
             <Link href="/modules" className="font-medium hover:underline">
               Start learning →

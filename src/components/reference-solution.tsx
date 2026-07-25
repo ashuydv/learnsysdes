@@ -39,12 +39,12 @@ export function ReferenceSolution({
 
   return (
     <div className="rounded-lg border border-black/10 p-6 dark:border-white/10">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <h2 className="text-lg font-semibold tracking-tight">Reference solution</h2>
         <button
           type="button"
           onClick={() => setRevealed((r) => !r)}
-          className="rounded-md border border-black/10 px-3 py-1.5 text-sm transition-colors hover:border-brand-via/40 hover:bg-brand-via/5 dark:border-white/15"
+          className="self-start rounded-md border border-black/10 px-3 py-1.5 text-sm transition-colors hover:border-brand-via/40 hover:bg-brand-via/5 sm:self-auto dark:border-white/15"
         >
           {revealed ? "Hide reference solution" : "Reveal reference solution"}
         </button>
@@ -52,7 +52,7 @@ export function ReferenceSolution({
 
       {revealed && (
         <div className="mt-5 flex flex-col gap-6">
-          <div className="flex items-center justify-end gap-2">
+          <div className="flex flex-wrap items-center justify-end gap-2">
             <button
               type="button"
               onClick={handleCopy}

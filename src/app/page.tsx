@@ -2,6 +2,8 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { techStack } from "@/lib/tech-stack";
 
+export const dynamic = "force-dynamic";
+
 const steps = [
   {
     title: "Learn the fundamentals",
@@ -33,7 +35,7 @@ export default async function Home() {
   ]);
 
   return (
-    <div>
+    <div className="overflow-x-hidden">
       <div className="relative mx-auto max-w-3xl px-6 py-24 text-center">
         <div
           aria-hidden
@@ -87,7 +89,7 @@ export default async function Home() {
       </div>
 
       <div className="mx-auto max-w-5xl px-6 py-16">
-        <div className="flex items-end justify-between">
+        <div className="flex flex-wrap items-end justify-between gap-2">
           <h2 className="text-2xl font-semibold tracking-tight">
             What you&apos;ll learn
           </h2>
@@ -111,7 +113,7 @@ export default async function Home() {
       </div>
 
       <div className="mx-auto max-w-5xl px-6 py-16">
-        <div className="flex items-end justify-between">
+        <div className="flex flex-wrap items-end justify-between gap-2">
           <h2 className="text-2xl font-semibold tracking-tight">
             Practice problems
           </h2>

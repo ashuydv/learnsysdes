@@ -99,7 +99,7 @@ export function QuizForm({
       {error && <p className="mt-3 text-sm text-red-600 dark:text-red-400">{error}</p>}
 
       {result ? (
-        <div className="mt-5 flex items-center justify-between rounded-md bg-black/5 px-4 py-3 text-sm dark:bg-white/10">
+        <div className="mt-5 flex flex-wrap items-center justify-between gap-2 rounded-md bg-black/5 px-4 py-3 text-sm dark:bg-white/10">
           <p>
             Score: <span className="font-semibold">{result.score}%</span> ({result.correct}/
             {result.total} correct)

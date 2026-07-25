@@ -26,9 +26,9 @@ export default async function ModulesPage() {
             <li key={module.id}>
               <Link
                 href={`/modules/${module.slug}`}
-                className="group flex items-center justify-between rounded-lg border border-black/10 px-5 py-4 transition-colors hover:border-brand-via/40 hover:bg-brand-via/5 dark:border-white/10"
+                className="group flex items-center justify-between gap-4 rounded-lg border border-black/10 px-5 py-4 transition-colors hover:border-brand-via/40 hover:bg-brand-via/5 dark:border-white/10"
               >
-                <div>
+                <div className="min-w-0">
                   <p className="font-medium group-hover:text-brand-via">
                     <span className="text-gradient-brand font-semibold">{module.order}.</span>{" "}
                     {module.title}

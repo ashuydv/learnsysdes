@@ -64,7 +64,7 @@ export default async function ModulePage({
         initialScore={progress?.quizScore ?? null}
       />
 
-      <div className="mt-10 flex items-center justify-between border-t border-black/10 pt-6 text-sm dark:border-white/10">
+      <div className="mt-10 flex flex-wrap items-center justify-between gap-3 border-t border-black/10 pt-6 text-sm dark:border-white/10">
         {prevModule ? (
           <Link href={`/modules/${prevModule.slug}`} className="hover:text-brand-via">
             ← {prevModule.title}

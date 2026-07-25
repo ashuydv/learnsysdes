@@ -69,12 +69,12 @@ export function EstimationPanel({
 
   return (
     <div className="rounded-lg border border-black/10 p-6 dark:border-white/10">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <h2 className="text-lg font-semibold tracking-tight">Back-of-envelope estimation</h2>
         <button
           type="button"
           onClick={() => setShowHelpers((s) => !s)}
-          className="text-sm text-black/50 hover:text-brand-via hover:underline dark:text-white/50"
+          className="self-start text-sm text-black/50 hover:text-brand-via hover:underline sm:self-auto dark:text-white/50"
         >
           {showHelpers ? "Hide helpers" : "Show calculation helpers"}
         </button>
