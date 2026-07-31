@@ -69,13 +69,13 @@ export function QuizForm({
                         ? "bg-emerald-500/10"
                         : showCorrectness && isSelected
                           ? "bg-red-500/10"
-                          : "hover:bg-brand-via/5"
+                          : "hover:bg-brand-soft"
                     }`}
                   >
                     <input
                       type="radio"
                       name={`question-${qi}`}
-                      className="accent-brand-via"
+                      className="accent-brand"
                       checked={isSelected}
                       onChange={() =>
                         setAnswers((prev) => prev.map((v, i) => (i === qi ? oi : v)))
@@ -106,7 +106,7 @@ export function QuizForm({
           </p>
           <button
             onClick={handleRetake}
-            className="rounded-md border border-black/10 px-3 py-1.5 text-sm transition-colors hover:border-brand-via/40 hover:bg-brand-via/5 dark:border-white/15"
+            className="rounded-md border border-black/10 px-3 py-1.5 text-sm transition-colors hover:border-brand/40 hover:bg-brand-soft dark:border-white/15"
           >
             Retake quiz
           </button>
@@ -115,7 +115,7 @@ export function QuizForm({
         <button
           onClick={handleSubmit}
           disabled={pending}
-          className="btn-gradient mt-5 rounded-md px-4 py-2 text-sm font-medium disabled:opacity-50"
+          className="bg-brand text-white hover:brightness-110 mt-5 rounded-md px-4 py-2 text-sm font-medium disabled:opacity-50"
         >
           {pending ? "Submitting…" : "Submit quiz"}
         </button>

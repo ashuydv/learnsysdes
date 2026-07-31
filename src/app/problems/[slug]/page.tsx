@@ -30,10 +30,10 @@ export default async function ProblemPage({
 
   return (
     <div className="mx-auto max-w-3xl px-6 py-12">
-      <Link href="/problems" className="text-sm text-black/50 hover:text-brand-via dark:text-white/50">
+      <Link href="/problems" className="text-sm text-black/50 hover:text-brand dark:text-white/50">
         ← All problems
       </Link>
-      <h1 className="text-gradient-brand mt-2 text-3xl font-bold tracking-tight">{problem.title}</h1>
+      <h1 className="text-brand mt-2 text-3xl font-bold tracking-tight">{problem.title}</h1>
       <p className="mt-3 whitespace-pre-line leading-relaxed text-black/80 dark:text-white/80">
         {problem.description}
       </p>

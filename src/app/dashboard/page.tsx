@@ -6,9 +6,9 @@ import { prisma } from "@/lib/prisma";
 function StatCard({ label, value }: { label: string; value: string }) {
   return (
     <div className="relative overflow-hidden rounded-lg border border-black/10 p-6 dark:border-white/10">
-      <div className="absolute inset-x-0 top-0 h-1 bg-gradient-brand" />
+      <div className="absolute inset-x-0 top-0 h-1 bg-brand" />
       <p className="text-sm text-black/60 dark:text-white/60">{label}</p>
-      <p className="text-gradient-brand mt-1 text-3xl font-bold tracking-tight">{value}</p>
+      <p className="text-brand mt-1 text-3xl font-bold tracking-tight">{value}</p>
     </div>
   );
 }
@@ -71,17 +71,17 @@ export default async function DashboardPage() {
         {continueItem ? (
           <Link
             href={continueItem.href}
-            className="mt-3 flex items-center justify-between rounded-md bg-gradient-to-r from-brand-from/10 via-brand-via/10 to-brand-to/10 px-4 py-3 text-sm hover:from-brand-from/15 hover:via-brand-via/15 hover:to-brand-to/15"
+            className="mt-3 flex items-center justify-between rounded-md bg-brand-soft px-4 py-3 text-sm hover:brightness-95"
           >
             <span>
               <span className="text-black/50 dark:text-white/50">{continueItem.subtitle}: </span>
               {continueItem.title}
             </span>
-            <span className="text-brand-via">→</span>
+            <span className="text-brand">→</span>
           </Link>
         ) : (
           <div className="mt-3 flex flex-col gap-2 rounded-md bg-black/5 px-4 py-3 text-sm sm:flex-row sm:items-center sm:justify-between dark:bg-white/10">
-            <span>You haven&apos;t started anything yet — jump into the first module.</span>
+            <span>You haven&apos;t started anything yet. Jump into the first module.</span>
             <Link href="/modules" className="font-medium hover:underline">
               Start learning →
             </Link>
@@ -92,18 +92,18 @@ export default async function DashboardPage() {
       <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2">
         <Link
           href="/modules"
-          className="group rounded-lg border border-black/10 px-5 py-4 transition-colors hover:border-brand-via/40 hover:bg-brand-via/5 dark:border-white/10"
+          className="group rounded-lg border border-black/10 px-5 py-4 transition-colors hover:border-brand/40 hover:bg-brand-soft dark:border-white/10"
         >
-          <p className="font-medium group-hover:text-brand-via">Browse modules</p>
+          <p className="font-medium group-hover:text-brand">Browse modules</p>
           <p className="mt-0.5 text-sm text-black/60 dark:text-white/60">
             Scalability, caching, sharding, CAP, and more.
           </p>
         </Link>
         <Link
           href="/problems"
-          className="group rounded-lg border border-black/10 px-5 py-4 transition-colors hover:border-brand-via/40 hover:bg-brand-via/5 dark:border-white/10"
+          className="group rounded-lg border border-black/10 px-5 py-4 transition-colors hover:border-brand/40 hover:bg-brand-soft dark:border-white/10"
         >
-          <p className="font-medium group-hover:text-brand-via">Practice problems</p>
+          <p className="font-medium group-hover:text-brand">Practice problems</p>
           <p className="mt-0.5 text-sm text-black/60 dark:text-white/60">
             Design 5 classic systems on an interactive canvas.
           </p>

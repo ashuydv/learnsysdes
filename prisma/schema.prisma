@@ -136,6 +136,26 @@ model Problem {
   submissions UserSubmission[]
 }
 
+enum QuestionDifficulty {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+  EXPERT
+}
+
+model InterviewQuestion {
+  id         String             @id @default(cuid())
+  slug       String             @unique
+  question   String             @db.Text
+  answer     String             @db.Text
+  difficulty QuestionDifficulty
+  order      Int
+  createdAt  DateTime           @default(now())
+  updatedAt  DateTime           @updatedAt
+
+  @@unique([difficulty, order])
+}
+
 model UserSubmission {
   id               String   @id @default(cuid())
   userId           String

@@ -54,7 +54,7 @@ export function ProblemWorkspace({
               type="button"
               onClick={handleSave}
               disabled={pending}
-              className="btn-gradient rounded-md px-4 py-2 text-sm font-medium disabled:opacity-50"
+              className="bg-brand text-white hover:brightness-110 rounded-md px-4 py-2 text-sm font-medium disabled:opacity-50"
             >
               {pending ? "Saving…" : "Save diagram"}
             </button>

@@ -44,7 +44,7 @@ export function ReferenceSolution({
         <button
           type="button"
           onClick={() => setRevealed((r) => !r)}
-          className="self-start rounded-md border border-black/10 px-3 py-1.5 text-sm transition-colors hover:border-brand-via/40 hover:bg-brand-via/5 sm:self-auto dark:border-white/15"
+          className="self-start rounded-md border border-black/10 px-3 py-1.5 text-sm transition-colors hover:border-brand/40 hover:bg-brand-soft sm:self-auto dark:border-white/15"
         >
           {revealed ? "Hide reference solution" : "Reveal reference solution"}
         </button>
@@ -56,14 +56,14 @@ export function ReferenceSolution({
             <button
               type="button"
               onClick={handleCopy}
-              className="rounded-md border border-black/10 px-3 py-1.5 text-sm transition-colors hover:border-brand-via/40 hover:bg-brand-via/5 dark:border-white/15"
+              className="rounded-md border border-black/10 px-3 py-1.5 text-sm transition-colors hover:border-brand/40 hover:bg-brand-soft dark:border-white/15"
             >
               {copied ? "Copied!" : "Copy to Clipboard"}
             </button>
             <button
               type="button"
               onClick={handleDownload}
-              className="rounded-md border border-black/10 px-3 py-1.5 text-sm transition-colors hover:border-brand-via/40 hover:bg-brand-via/5 dark:border-white/15"
+              className="rounded-md border border-black/10 px-3 py-1.5 text-sm transition-colors hover:border-brand/40 hover:bg-brand-soft dark:border-white/15"
             >
               Download .md
             </button>
@@ -73,7 +73,7 @@ export function ReferenceSolution({
           {diagramSnapshot != null && (
             <div>
               <p className="mb-2 text-sm font-medium text-black/60 dark:text-white/60">
-                Reference diagram — view only, not saved to your submission
+                Reference diagram, view only, not saved to your submission
               </p>
               <ExcalidrawCanvas
                 key="reference"

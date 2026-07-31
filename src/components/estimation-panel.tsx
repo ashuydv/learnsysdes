@@ -40,7 +40,7 @@ function NumberField({
           min={0}
           value={Number.isFinite(value) ? value : 0}
           onChange={(e) => onChange(Number(e.target.value))}
-          className="w-full rounded-md border border-black/15 px-3 py-1.5 text-sm outline-none focus:border-brand-via focus:ring-2 focus:ring-brand-via/20 dark:border-white/20 dark:bg-transparent"
+          className="w-full rounded-md border border-black/15 px-3 py-1.5 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/20 dark:border-white/20 dark:bg-transparent"
         />
         {unit && <span className="shrink-0 text-black/40 dark:text-white/40">{unit}</span>}
       </div>
@@ -74,7 +74,7 @@ export function EstimationPanel({
         <button
           type="button"
           onClick={() => setShowHelpers((s) => !s)}
-          className="self-start text-sm text-black/50 hover:text-brand-via hover:underline sm:self-auto dark:text-white/50"
+          className="self-start text-sm text-black/50 hover:text-brand hover:underline sm:self-auto dark:text-white/50"
         >
           {showHelpers ? "Hide helpers" : "Show calculation helpers"}
         </button>
@@ -110,14 +110,14 @@ export function EstimationPanel({
                   <button
                     type="button"
                     onClick={() => set("qps", Math.round(avgQps))}
-                    className="rounded-md border border-black/10 px-2.5 py-1 text-xs transition-colors hover:border-brand-via/40 hover:bg-brand-via/5 dark:border-white/15"
+                    className="rounded-md border border-black/10 px-2.5 py-1 text-xs transition-colors hover:border-brand/40 hover:bg-brand-soft dark:border-white/15"
                   >
                     Use average
                   </button>
                   <button
                     type="button"
                     onClick={() => set("qps", Math.round(peakQps))}
-                    className="rounded-md border border-black/10 px-2.5 py-1 text-xs transition-colors hover:border-brand-via/40 hover:bg-brand-via/5 dark:border-white/15"
+                    className="rounded-md border border-black/10 px-2.5 py-1 text-xs transition-colors hover:border-brand/40 hover:bg-brand-soft dark:border-white/15"
                   >
                     Use peak
                   </button>
@@ -148,7 +148,7 @@ export function EstimationPanel({
                 <button
                   type="button"
                   onClick={() => set("storageGb", Math.round(estimatedStorageGb))}
-                  className="w-fit rounded-md border border-black/10 px-2.5 py-1 text-xs transition-colors hover:border-brand-via/40 hover:bg-brand-via/5 dark:border-white/15"
+                  className="w-fit rounded-md border border-black/10 px-2.5 py-1 text-xs transition-colors hover:border-brand/40 hover:bg-brand-soft dark:border-white/15"
                 >
                   Use this
                 </button>

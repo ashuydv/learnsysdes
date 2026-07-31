@@ -26,7 +26,7 @@ export function OAuthButtons({
         <button
           type="button"
           onClick={() => signIn("google", { callbackUrl })}
-          className="rounded-md border border-black/10 px-4 py-2 text-sm transition-colors hover:border-brand-via/40 hover:bg-brand-via/5 dark:border-white/15"
+          className="rounded-md border border-black/10 px-4 py-2 text-sm transition-colors hover:border-brand/40 hover:bg-brand-soft dark:border-white/15"
         >
           Continue with Google
         </button>
@@ -35,7 +35,7 @@ export function OAuthButtons({
         <button
           type="button"
           onClick={() => signIn("github", { callbackUrl })}
-          className="rounded-md border border-black/10 px-4 py-2 text-sm transition-colors hover:border-brand-via/40 hover:bg-brand-via/5 dark:border-white/15"
+          className="rounded-md border border-black/10 px-4 py-2 text-sm transition-colors hover:border-brand/40 hover:bg-brand-soft dark:border-white/15"
         >
           Continue with GitHub
         </button>

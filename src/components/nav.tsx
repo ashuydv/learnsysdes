@@ -12,21 +12,24 @@ export async function Nav() {
   return (
     <header className="border-b border-black/10 dark:border-white/10">
       <nav className="mx-auto flex max-w-5xl items-center justify-between px-4 py-4 sm:px-6">
-        <Link href="/" className="text-gradient-brand text-lg font-bold tracking-tight">
+        <Link href="/" className="font-heading text-lg font-bold tracking-tight text-brand">
           LearnSysDes
         </Link>
 
         {/* Desktop nav */}
         <div className="hidden items-center gap-6 text-sm sm:flex">
+          <Link href="/questions" className="hover:text-brand">
+            Questions
+          </Link>
           {session?.user ? (
             <>
-              <Link href="/dashboard" className="hover:text-brand-via">
+              <Link href="/dashboard" className="hover:text-brand">
                 Dashboard
               </Link>
-              <Link href="/modules" className="hover:text-brand-via">
+              <Link href="/modules" className="hover:text-brand">
                 Modules
               </Link>
-              <Link href="/problems" className="hover:text-brand-via">
+              <Link href="/problems" className="hover:text-brand">
                 Problems
               </Link>
               <span className="max-w-[12rem] truncate text-black/50 dark:text-white/50">
@@ -43,12 +46,12 @@ export async function Nav() {
             </>
           ) : (
             <>
-              <Link href="/sign-in" className="hover:text-brand-via">
+              <Link href="/sign-in" className="hover:text-brand">
                 Sign in
               </Link>
               <Link
                 href="/sign-up"
-                className="btn-gradient rounded-md px-3 py-1.5 font-medium shadow-sm shadow-brand-via/20"
+                className="rounded-md bg-brand px-3 py-1.5 font-medium text-white hover:brightness-110"
               >
                 Sign up
               </Link>
@@ -74,18 +77,21 @@ export async function Nav() {
             </svg>
           </summary>
           <div className="absolute right-0 top-full z-10 mt-2 flex w-56 flex-col gap-1 rounded-lg border border-black/10 bg-[var(--background)] p-3 text-sm shadow-lg dark:border-white/15">
+            <Link href="/questions" className="rounded-md px-2 py-1.5 hover:bg-brand-soft">
+              Questions
+            </Link>
             {session?.user ? (
               <>
                 <span className="truncate px-2 pb-2 text-black/50 dark:text-white/50">
                   {session.user.email}
                 </span>
-                <Link href="/dashboard" className="rounded-md px-2 py-1.5 hover:bg-brand-via/5">
+                <Link href="/dashboard" className="rounded-md px-2 py-1.5 hover:bg-brand-soft">
                   Dashboard
                 </Link>
-                <Link href="/modules" className="rounded-md px-2 py-1.5 hover:bg-brand-via/5">
+                <Link href="/modules" className="rounded-md px-2 py-1.5 hover:bg-brand-soft">
                   Modules
                 </Link>
-                <Link href="/problems" className="rounded-md px-2 py-1.5 hover:bg-brand-via/5">
+                <Link href="/problems" className="rounded-md px-2 py-1.5 hover:bg-brand-soft">
                   Problems
                 </Link>
                 <form action={handleSignOut} className="mt-1">
@@ -99,12 +105,12 @@ export async function Nav() {
               </>
             ) : (
               <>
-                <Link href="/sign-in" className="rounded-md px-2 py-1.5 hover:bg-brand-via/5">
+                <Link href="/sign-in" className="rounded-md px-2 py-1.5 hover:bg-brand-soft">
                   Sign in
                 </Link>
                 <Link
                   href="/sign-up"
-                  className="btn-gradient rounded-md px-3 py-1.5 text-center font-medium"
+                  className="rounded-md bg-brand px-3 py-1.5 text-center font-medium text-white hover:brightness-110"
                 >
                   Sign up
                 </Link>

@@ -19,7 +19,7 @@ export default async function SignInPage({
 
   return (
     <div className="mx-auto max-w-sm px-6 py-16">
-      <h1 className="text-gradient-brand text-2xl font-bold tracking-tight">Sign in</h1>
+      <h1 className="text-brand text-2xl font-bold tracking-tight">Sign in</h1>
       <p className="mt-1 text-sm text-black/60 dark:text-white/60">
         Welcome back. Pick up where you left off.
       </p>
